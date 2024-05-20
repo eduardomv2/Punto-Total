@@ -113,6 +113,7 @@ namespace Punto_Total
 
             // También podemos mostrar el total en un Label
             labelTotalEarnings.Text = $"Total Earnings: {totalEarnings:C}";
+
         }
     }
 }
