@@ -28,8 +28,9 @@ namespace Punto_Total
         private void InitializeDataGridView()
         {
             // Configurar columnas del DataGridView
-            dataGridView1.Columns.Add("Category", "Category");
+            dataGridView1.Columns.Add("Name", "Name");
             dataGridView1.Columns.Add("Value", "Value");
+            dataGridView1.Columns.Add("Quantity", "Quantity");
         }
         private void InitializeChart()
         {
@@ -56,18 +57,19 @@ namespace Punto_Total
         private void ButtonAddSale_Click(object sender, EventArgs e)
         {
             string category = textBox1.Text;
-            if (double.TryParse(textBox2.Text, out double value))
+            if (double.TryParse(textBox2.Text, out double price) && int.TryParse(textBox3.Text, out int quantity))
             {
                 // Agregar la venta al DataGridView
-                dataGridView1.Rows.Add(category, value);
+                dataGridView1.Rows.Add(category, price, quantity);
 
                 // Limpiar los TextBoxes
                 textBox1.Clear();
                 textBox2.Clear();
+                textBox3.Clear();
             }
             else
             {
-                MessageBox.Show("Please enter a valid number for the value.");
+                MessageBox.Show("Please enter valid values for price and quantity.");
             }
         }
 
@@ -77,18 +79,40 @@ namespace Punto_Total
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
-                if (row.Cells[0].Value != null && row.Cells[1].Value != null)
+                if (row.Cells[0].Value != null && row.Cells[1].Value != null && row.Cells[2].Value != null)
                 {
                     string category = row.Cells[0].Value.ToString();
-                    double value;
-                    if (double.TryParse(row.Cells[1].Value.ToString(), out value))
+                    if (double.TryParse(row.Cells[1].Value.ToString(), out double price) && int.TryParse(row.Cells[2].Value.ToString(), out int quantity))
                     {
-                        chart1.Series[0].Points.AddXY(category, value);
+                        double total = price * quantity;
+                        chart1.Series[0].Points.AddXY(category, total);
                     }
                 }
             }
 
             chart1.Invalidate();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            double totalEarnings = 0;
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells[1].Value != null && row.Cells[2].Value != null)
+                {
+                    if (double.TryParse(row.Cells[1].Value.ToString(), out double price) && int.TryParse(row.Cells[2].Value.ToString(), out int quantity))
+                    {
+                        totalEarnings += price * quantity;
+                    }
+                }
+            }
+
+            // Mostrar el total de ganancias en un MessageBox
+            MessageBox.Show($"Total Earnings: {totalEarnings:C}", "Total Earnings");
+
+            // También podemos mostrar el total en un Label
+            labelTotalEarnings.Text = $"Total Earnings: {totalEarnings:C}";
         }
     }
 }
